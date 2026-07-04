@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Me - Privacy-First Productivity Critique Engine</title>
+    <meta name="description" content="A privacy-first local productivity analytical dashboard that evaluates calendar architecture and email latency to deliver humorous AI roasts and actionable fixes.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #070709;
+            --card-bg: #0f0f13;
+            --tile-bg: #121217;
+            --text-primary: #ffffff;
+            --text-secondary: #8b8f9c;
+            --accent-blue: #3b82f6;
+            --accent-red: #ef4444;
+            --accent-orange: #f59e0b;
+            --accent-purple: #a855f7;
+            --border-color: rgba(255, 255, 255, 0.06);
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2.5rem 1.5rem;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient background glow */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.05) 0%, transparent 70%);
+            top: -150px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Top Badges */
+        .top-badges-row {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .badge-pill {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge-streak {
+            border-color: rgba(245, 158, 11, 0.25);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.03);
+        }
+
+        .dot-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .dot-icon.connected {
+            background-color: #10b981;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        .dot-icon.disconnected {
+            background-color: var(--accent-red);
+            box-shadow: 0 0 8px var(--accent-red);
+        }
+
+        /* Main Content Grid */
+        .main-dashboard-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1100px;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 850px) {
+            .main-dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Standard Card Styling */
+        .dashboard-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Left Card: Score Meter */
+        .score-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 280px;
+        }
+
+        .score-gauge-wrapper {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin-bottom: 1.25rem;
+        }
+
+        .score-gauge {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .score-gauge-bg {
+            fill: none;
+            stroke: #181820;
+            stroke-width: 10;
+        }
+
+        .score-gauge-fill {
+            fill: none;
+            stroke: url(#gauge-gradient);
+            stroke-width: 10;
+            stroke-dasharray: 439.8; /* 2 * PI * 70 (r=70) */
+            stroke-dashoffset: 439.8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease-out;
+        }
+
+        .score-display-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .score-card-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Right Panel: Metrics Panel */
+        .metrics-card-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 1.25rem;
+        }
+
+        .metrics-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metrics-panel-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            letter-spacing: 1.5px;
+        }
+
+        .refresh-pill-btn {
+            background-color: var(--tile-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            padding: 0.45rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .refresh-pill-btn:hover {
+            background-color: #1e1e26;
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .metrics-grid-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .metrics-grid-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .metric-item-tile {
+            background-color: var(--tile-bg);
+            border-radius: 12px;
+            padding: 1.1rem;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 0.5rem;
+            min-height: 105px;
+        }
+
+        .metric-tile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+        }
+
+        .metric-tile-icon {
+            font-size: 0.95rem;
+        }
+
+        .metric-tile-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        /* Tile Colorizations */
+        .unread-emails-tile { border-color: rgba(236, 72, 153, 0.15); }
+        .unread-emails-tile .metric-tile-value { color: #ec4899; }
+
+        .events-scheduled-tile { border-color: rgba(59, 130, 246, 0.15); }
+        .events-scheduled-tile .metric-tile-value { color: #3b82f6; }
+
+        .events-skipped-tile { border-color: rgba(245, 158, 11, 0.15); }
+        .events-skipped-tile .metric-tile-value { color: #f59e0b; }
+
+        .completed-cleared-tile { border-color: rgba(168, 85, 247, 0.15); }
+        .completed-cleared-tile .metric-tile-value { color: #a855f7; }
+
+        .days-highlights-bar {
+            background-color: var(--tile-bg);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .day-highlight-item {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+        }
+
+        .highlight-green {
+            color: #10b981;
+            font-weight: 700;
+        }
+
+        .highlight-red {
+            color: var(--accent-red);
+            font-weight: 700;
+        }
+
+        .highlight-divider {
+            width: 1px;
+            height: 18px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Intensity Selector */
+        .intensity-pills-selector {
+            background-color: var(--tile-bg);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 30px;
+            padding: 0.25rem;
+            display: inline-flex;
+            gap: 0.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .intensity-selector-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.5rem 1.25rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .intensity-selector-btn.active {
+            background-color: var(--accent-red);
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .intensity-selector-btn:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        /* Action Buttons Row */
+        .bottom-actions-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 1100px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-control-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.85rem 1.75rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            text-decoration: none;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .action-control-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-control-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-connect-blue {
+            background-color: var(--accent-blue);
+        }
+        .btn-connect-blue:hover {
+            background-color: #2563eb;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-roast-red {
+            background-color: var(--accent-red);
+        }
+        .btn-roast-red:hover {
+            background-color: #dc2626;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-again-outline {
+            background-color: transparent;
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+        }
+        .btn-again-outline:hover {
+            background-color: rgba(239, 68, 68, 0.05);
+            color: #ffffff;
+        }
+
+        .btn-fix-outline {
+            background-color: transparent;
+            border: 1px solid #ffffff;
+            color: #ffffff;
+        }
+        .btn-fix-outline:hover {
+            background-color: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Dynamic Panel Sections */
+        .dynamic-view-panel {
+            width: 100%;
+            max-width: 1100px;
+            margin-bottom: 1.5rem;
+            animation: slideDown 0.3s ease-out forwards;
+            display: none;
+        }
+
+        /* AI Roast Display Card */
+        .roast-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .roast-card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+
+        .worst-metric-badge {
+            font-size: 0.8rem;
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .roast-text-container {
+            font-size: 1.1rem;
+            line-height: 1.65;
+            color: #f3f1f6;
+            padding: 0.5rem 0;
+            position: relative;
+        }
+
+        .roast-text-container::before {
+            content: '“';
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            font-size: 4.5rem;
+            color: rgba(239, 68, 68, 0.15);
+            font-family: serif;
+            line-height: 1;
+        }
+
+        /* Fix Me Card & Styling */
+        .fixes-panel-header {
+            font-size: 1.35rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+
+        .fixes-panel-icon {
+            font-size: 1.4rem;
+            color: var(--accent-blue);
+        }
+
+        .fixes-panel-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Injectable Box styles */
+        .st-info-box, .st-success-box {
+            background-color: rgba(30, 41, 59, 0.3);
+            border: 1px solid rgba(59, 130, 246, 0.12);
+            border-left: 4px solid var(--accent-blue);
+            border-radius: 0 8px 8px 0;
+            padding: 1.25rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #d1d5db;
+        }
+
+        .st-info-box strong, .st-success-box strong {
+            color: #ffffff;
+            font-size: 1rem;
+            display: inline-block;
+            margin-bottom: 0.35rem;
+        }
+
+        .st-success-box {
+            border-left-color: #10b981;
+            border-color: rgba(16, 185, 129, 0.12);
+            background-color: rgba(6, 78, 59, 0.15);
+        }
+
+        /* Previous Week Summary Box */
+        .previous-week-container {
+            width: 100%;
+            max-width: 1100px;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .previous-week-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #6b7280;
+            letter-spacing: 1.5px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .previous-week-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .previous-week-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .previous-week-tile {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .previous-week-tile:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .previous-week-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #6b7280;
+            letter-spacing: 0.5px;
+        }
+
+        .previous-week-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Loading progress overlay */
+        .loading-progress-overlay {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            background: rgba(7, 7, 9, 0.92);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+
+        .loading-progress-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(239, 68, 68, 0.1);
+            border-top-color: var(--accent-red);
+            border-radius: 50%;
+            animation: spinCircle 0.8s infinite linear;
+        }
+
+        .loading-progress-message {
+            font-size: 1.15rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Toast notification */
+        .toast-notif-bar {
+            position: fixed;
+            bottom: 24px;
+            right: -320px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            color: var(--text-primary);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .toast-notif-bar.show {
+            right: 24px;
+        }
+
+        /* Animations */
+        @keyframes spinCircle {
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Connection Badges -->
+    <div class="top-badges-row">
+        <div id="connection-status-pill" class="badge-pill">
+            <span id="connection-status-dot" class="dot-icon disconnected"></span>
+            <span id="connection-status-text">Detecting Connection...</span>
+        </div>
+        <div class="badge-pill badge-streak">
+            Daily Habit Streak 🔥 : <span id="streak-days-display">0</span> Days
+        </div>
+    </div>
+
+    <!-- Main Grid Layout -->
+    <div class="main-dashboard-grid">
+        <!-- Score Card (Left) -->
+        <div class="dashboard-card score-card">
+            <div class="score-gauge-wrapper">
+                <svg class="score-gauge" viewBox="0 0 160 160">
+                    <defs>
+                        <linearGradient id="gauge-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#ff763b" />
+                            <stop offset="100%" stop-color="#ffa03b" />
+                        </linearGradient>
+                    </defs>
+                    <circle class="score-gauge-bg" cx="80" cy="80" r="70"></circle>
+                    <circle id="score-arc-indicator" class="score-gauge-fill" cx="80" cy="80" r="70"></circle>
+                </svg>
+                <div id="score-value-text" class="score-display-value">0</div>
+            </div>
+            <div class="score-card-label">Productivity Score</div>
+        </div>
+
+        <!-- Metrics Panel (Right) -->
+        <div class="dashboard-card metrics-card-panel">
+            <div class="metrics-panel-header">
+                <span class="metrics-panel-title">LIVE METRICS</span>
+                <button class="refresh-pill-btn" onclick="triggerRefresh()">
+                    <span>🔄</span> Refresh Data
+                </button>
+            </div>
+            
+            <div class="metrics-grid-row">
+                <!-- Card 1 -->
+                <div class="metric-item-tile unread-emails-tile">
+                    <div class="metric-tile-header">
+                        <span>UNREAD<br>EMAILS</span>
+                        <span class="metric-tile-icon">📩</span>
+                    </div>
+                    <div id="unread-count-val" class="metric-tile-value">0</div>
+                </div>
+                
+                <!-- Card 2 -->
+                <div class="metric-item-tile events-scheduled-tile">
+                    <div class="metric-tile-header">
+                        <span>EVENTS<br>SCHEDULED</span>
+                        <span class="metric-tile-icon">📅</span>
+                    </div>
+                    <div id="scheduled-count-val" class="metric-tile-value">0</div>
+                </div>
+                
+                <!-- Card 3 -->
+                <div class="metric-item-tile events-skipped-tile">
+                    <div class="metric-tile-header">
+                        <span>EVENTS<br>SKIPPED</span>
+                        <span class="metric-tile-icon">⚠️</span>
+                    </div>
+                    <div id="skipped-count-val" class="metric-tile-value">0</div>
+                </div>
+                
+                <!-- Card 4 -->
+                <div class="metric-item-tile completed-cleared-tile">
+                    <div class="metric-tile-header">
+                        <span>COMPLETED<br>& CLEARED</span>
+                        <span class="metric-tile-icon">🧹</span>
+                    </div>
+                    <div id="completed-count-val" class="metric-tile-value">0</div>
+                </div>
+            </div>
+            
+            <div class="days-highlights-bar">
+                <div class="day-highlight-item">BEST DAY: <span id="best-day-val" class="highlight-green">Wednesday</span></div>
+                <div class="highlight-divider"></div>
+                <div class="day-highlight-item">WORST DAY: <span id="worst-day-val" class="highlight-red">Friday</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intensity Selector -->
+    <div class="intensity-pills-selector">
+        <button class="intensity-selector-btn" onclick="updateIntensity('gentle')">Gentle 😋</button>
+        <button class="intensity-selector-btn" onclick="updateIntensity('medium')">Medium 🔥</button>
+        <button class="intensity-selector-btn active" onclick="updateIntensity('savage')">Savage 💀</button>
+    </div>
+
+    <!-- Actions Row -->
+    <div class="bottom-actions-row">
+        <a id="connect-btn-anchor" href="/connect" class="action-control-btn btn-connect-blue">
+            <span>➔</span> Connect Google
+        </a>
+        <button class="action-control-btn btn-roast-red" onclick="triggerRoast()">
+            <span>🔥</span> Roast Me
+        </button>
+        <button class="action-control-btn btn-again-outline" onclick="triggerRoastAgain()">
+            <span>🔄</span> Roast Me Again
+        </button>
+        <button class="action-control-btn btn-fix-outline" onclick="toggleFixesPanel()">
+            <span>✓</span> Fix Me
+        </button>
+    </div>
+
+    <!-- Dynamic Section: AI Roast Card -->
+    <div id="roast-display-card" class="dashboard-card dynamic-view-panel">
+        <div class="roast-card-header">
+            <span class="roast-card-title">🌶️ AI Roast Critique</span>
+            <div id="worst-metric-badge-el" class="worst-metric-badge" style="display: none;"></div>
+        </div>
+        <div id="roast-text-el" class="roast-text-container">
+            Loading critiques...
+        </div>
+    </div>
+
+    <!-- Dynamic Section: Fix Me Action Plan -->
+    <div id="fixes-display-card" class="dashboard-card dynamic-view-panel">
+        <div class="fixes-panel-header">
+            <span class="fixes-panel-icon">✏️</span> Fix Me (Productivity Action Plan)
+        </div>
+        <div id="fixes-list-el" class="fixes-panel-list">
+            No fixes loaded. Run diagnostics or click "Fix Me" to sync.
+        </div>
+    </div>
+
+    <!-- Previous Week Summary -->
+    <div class="previous-week-container">
+        <div class="previous-week-title">📊 Previous Week Summary</div>
+        <div class="previous-week-grid">
+            <div class="previous-week-tile">
+                <span class="previous-week-label">LAST WEEK'S SCORE</span>
+                <span id="prev-score-val" class="previous-week-value">0</span>
+            </div>
+            <div class="previous-week-tile">
+                <span class="previous-week-label">EMAILS PROCESSED</span>
+                <span id="prev-emails-val" class="previous-week-value">0</span>
+            </div>
+            <div class="previous-week-tile">
+                <span class="previous-week-label">TOTAL TASKS COMPLETED</span>
+                <span id="prev-tasks-val" class="previous-week-value">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sequential Loading Overlay -->
+    <div id="loading-overlay-el" class="loading-progress-overlay">
+        <div class="loading-progress-spinner"></div>
+        <div id="loading-message-el" class="loading-progress-message">Analyzing sandbox metrics...</div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notif-el" class="toast-notif-bar">
+        Success!
+    </div>
+
+    <!-- Scripting and Data Bindings -->
+    <script>
+        let currentIntensityState = 'savage';
+        let fixesHTMLCached = '';
+        let isRoastGenerated = false;
+
+        window.onload = function() {
+            initApp();
+        };
+
+        function initApp() {
+            checkConnection();
+            fetchInitialScores();
+        }
+
+        function showNotification(msg) {
+            const toast = document.getElementById('toast-notif-el');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function checkConnection() {
+            fetch('/status')
+                .then(res => res.json())
+                .then(data => {
+                    const dot = document.getElementById('connection-status-dot');
+                    const text = document.getElementById('connection-status-text');
+                    if (data.connected) {
+                        dot.className = 'dot-icon connected';
+                        text.textContent = 'Google Account Connected';
+                    } else {
+                        dot.className = 'dot-icon disconnected';
+                        text.textContent = 'Google Account Disconnected';
+                    }
+                })
+                .catch(err => console.error("Error verifying status:", err));
+        }
+
+        function updateGauge(score) {
+            document.getElementById('score-value-text').textContent = score;
+            const ring = document.getElementById('score-arc-indicator');
+            const radius = 70;
+            const circumference = 2 * Math.PI * radius; // ~439.82
+            const offset = circumference - (score / 100) * circumference;
+            ring.style.strokeDashoffset = offset;
+        }
+
+        function fetchInitialScores() {
+            fetch('/score')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        updateGauge(data.score);
+                        document.getElementById('streak-days-display').textContent = data.current_streak;
+                        document.getElementById('unread-count-val').textContent = data.unread;
+                        document.getElementById('scheduled-count-val').textContent = data.events_this_week;
+                        document.getElementById('skipped-count-val').textContent = data.events_skipped;
+                        document.getElementById('completed-count-val').textContent = data.completed_cleared_count;
+                        document.getElementById('best-day-val').textContent = data.best_day;
+                        document.getElementById('worst-day-val').textContent = data.worst_day;
+
+                        if (data.last_week) {
+                            document.getElementById('prev-score-val').textContent = data.last_week.score || "0";
+                            document.getElementById('prev-emails-val').textContent = data.last_week.emails_processed || "0";
+                            document.getElementById('prev-tasks-val').textContent = data.last_week.tasks_completed || "0";
+                        }
+                    }
+                })
+                .catch(err => console.error("Error retrieving scores:", err));
+        }
+
+        function updateIntensity(level) {
+            currentIntensityState = level;
+            const buttons = document.querySelectorAll('.intensity-selector-btn');
+            buttons.forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(level)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            if (isRoastGenerated) {
+                triggerRoastAgain();
+            }
+        }
+
+        function triggerPipelineOverlay(callback) {
+            const overlay = document.getElementById('loading-overlay-el');
+            const text = document.getElementById('loading-message-el');
+            
+            overlay.style.display = 'flex';
+            text.textContent = 'Evaluating calendar architecture...';
+
+            setTimeout(() => {
+                text.textContent = 'Evaluating inbox backlog density...';
+                
+                setTimeout(() => {
+                    text.textContent = 'Critiquing client metadata...';
+                    callback();
+                }, 1000);
+            }, 1000);
+        }
+
+        function triggerRefresh() {
+            triggerPipelineOverlay(() => {
+                fetch(`/audit?intensity=${currentIntensityState}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('loading-overlay-el').style.display = 'none';
+                        if (data.success) {
+                            // Update values
+                            updateGauge(data.score);
+                            document.getElementById('streak-days-display').textContent = data.current_streak;
+                            
+                            if (data.data) {
+                                document.getElementById('unread-count-val').textContent = data.data.gmail.total_unread;
+                                document.getElementById('scheduled-count-val').textContent = data.data.calendar.total_events_this_week || data.data.calendar.events.length;
+                                document.getElementById('skipped-count-val').textContent = data.data.calendar.events_skipped;
+                                document.getElementById('completed-count-val').textContent = data.data.calendar.completed_cleared_count;
+                                document.getElementById('best-day-val').textContent = data.data.calendar.best_day;
+                                document.getElementById('worst-day-val').textContent = data.data.calendar.worst_day;
+                            }
+                            
+                            if (data.last_week) {
+                                document.getElementById('prev-score-val').textContent = data.last_week.score || "0";
+                                document.getElementById('prev-emails-val').textContent = data.last_week.emails_processed || "0";
+                                document.getElementById('prev-tasks-val').textContent = data.last_week.tasks_completed || "0";
+                            }
+                            
+                            fixesHTMLCached = data.fixes;
+                            document.getElementById('fixes-list-el').innerHTML = data.fixes;
+                            
+                            showNotification("Dashboard statistics refreshed.");
+                        } else {
+                            showNotification("Failed to refresh statistics.");
+                        }
+                    })
+                    .catch(err => {
+                        document.getElementById('loading-overlay-el').style.display = 'none';
+                        showNotification("Network error. Could not connect.");
+                        console.error(err);
+                    });
+            });
+        }
+
+        function triggerRoast() {
+            triggerPipelineOverlay(() => {
+                fetch(`/audit?intensity=${currentIntensityState}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('loading-overlay-el').style.display = 'none';
+                        if (data.success) {
+                            updateGauge(data.score);
+                            document.getElementById('streak-days-display').textContent = data.current_streak;
+                            
+                            // Render Roast Card
+                            const card = document.getElementById('roast-display-card');
+                            document.getElementById('roast-text-el').textContent = data.roast;
+                            document.getElementById('worst-metric-badge-el').style.display = 'none';
+                            card.style.display = 'block';
+                            isRoastGenerated = true;
+
+                            // Cache fixes
+                            fixesHTMLCached = data.fixes;
+                            document.getElementById('fixes-list-el').innerHTML = data.fixes;
+                            
+                            // Scroll to roast
+                            card.scrollIntoView({ behavior: 'smooth' });
+                            showNotification("AI critique generated successfully.");
+                        } else {
+                            showNotification("Failed to execute critique.");
+                        }
+                    })
+                    .catch(err => {
+                        document.getElementById('loading-overlay-el').style.display = 'none';
+                        showNotification("Network error.");
+                        console.error(err);
+                    });
+            });
+        }
+
+        function triggerRoastAgain() {
+            const roastText = document.getElementById('roast-text-el');
+            roastText.style.opacity = '0.5';
+
+            fetch('/again', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ intensity: currentIntensityState })
+            })
+            .then(res => res.json())
+            .then(data => {
+                roastText.style.opacity = '1';
+                if (data.success) {
+                    roastText.textContent = data.roast;
+                    document.getElementById('worst-metric-badge-el').style.display = 'none';
+                    document.getElementById('roast-display-card').style.display = 'block';
+                    isRoastGenerated = true;
+                    showNotification("Roast critique re-rolled.");
+                } else {
+                    showNotification("Could not re-roll roast.");
+                }
+            })
+            .catch(err => {
+                roastText.style.opacity = '1';
+                console.error(err);
+            });
+        }
+
+        function toggleFixesPanel() {
+            const fixesCard = document.getElementById('fixes-display-card');
+            if (fixesCard.style.display === 'block') {
+                fixesCard.style.display = 'none';
+            } else {
+                if (!fixesHTMLCached) {
+                    // Fetch audit to load fixes
+                    fetch(`/audit?intensity=${currentIntensityState}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                fixesHTMLCached = data.fixes;
+                                document.getElementById('fixes-list-el').innerHTML = data.fixes;
+                                fixesCard.style.display = 'block';
+                                fixesCard.scrollIntoView({ behavior: 'smooth' });
+                            }
+                        });
+                } else {
+                    fixesCard.style.display = 'block';
+                    fixesCard.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
