@@ -1,0 +1,18 @@
+# Local configuration and credentials
+.env
+credentials.json
+token.json
+
+# Streak data
+streak_data.json
+last_week_archive.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDEs
+.vscode/
+.idea/
