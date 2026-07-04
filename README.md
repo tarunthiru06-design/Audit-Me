@@ -29,6 +29,22 @@ The engine is built as a modular workspace structured as follows:
 
 ---
 
+## 📊 System Architecture & Data Flow
+
+<div align="center">
+  <img src="Gemini_Generated_Image_kbwschkbwschkbws.png" alt="System Architecture" width="85%">
+</div>
+
+### Architectural Mechanics
+The system architecture implements a strict unidirectional data flow designed to decouple data ingestion from machine learning logic:
+1. **The Ingestion Interface:** The workspace initializes secure OAuth pipelines connecting directly to Google Calendar and Gmail endpoints.
+2. **The Privacy Filter (data_pipeline.py):** Raw text payloads are stripped client-side, and only localized numerical metadata is processed to ensure total confidentiality.
+3. **Decoupled Agent Orchestration (agents/):** The processed numeric state is dispatched to our decoupled LLM agents (Groq for the roaster engine and Gemini for the coach engine).
+4. **Unified State Rendering (app.py):** The individual agent outputs are compiled and pushed straight to the Flask presentation layer.
+
+---
+
+
 ## 🎓 Key Course Concepts
 
 ### Agent Skills & Pipeline Decoupling
