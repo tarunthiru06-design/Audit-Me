@@ -4,6 +4,13 @@
 
 ---
 
+## 🎯 Problem & Solution
+
+* **Problem**: Modern professionals face chronic digital distractions, fragmented schedules, and overwhelmed email inboxes, leading to decreased productivity and slower communication velocity. Existing analytics and coaching tools often require invasive access to read the raw body text of personal emails and private calendar event descriptions, compromising user privacy.
+* **Solution**: **Audit Me** solves this by implementing a local, privacy-first analytical engine that processes only numerical metadata (such as timestamps, queue counts, and scheduling intervals) client-side. It decouples data gathering from AI analysis through modular pipelines (Schedule Architecture and Inbox Backlog Density), feeding aggregated insights to LLM-powered agents (Roaster & Coach) to provide direct, humorous feedback and actionable "Fix Me" remediation widgets without exposing sensitive communication payloads.
+
+---
+
 ## 🛠️ Project Structure / Blueprint
 
 The engine is built as a modular workspace structured as follows:
@@ -12,9 +19,9 @@ The engine is built as a modular workspace structured as follows:
 ├── agents/
 │   ├── coach.py           # Gemini-powered productivity coaching logic
 │   └── roaster.py         # Groq-powered multi-intensity roasting logic
-├── app.py                 # Core Streamlit application entry point and user interface
+├── app.py                 # Core Flask application entry point and user interface
 ├── data_pipeline.py       # Data pipelines, Google API fetcher, scoring, & streak calculations
-├── requirements.txt       # Python dependencies (including streamlit, groq, google-generativeai)
+├── requirements.txt       # Python dependencies (including flask, groq, google-generativeai)
 ├── README.md              # Project documentation
 ├── .env.example           # Example environment template
 └── .gitignore             # Git exclusion rules
@@ -67,7 +74,7 @@ cd "Audit Me"
 ```
 
 ### Step 2: Install Python Dependencies
-Install the required packages using `pip`:
+Install the required packages (including Flask, Google APIs, and AI integrations) using `pip`:
 ```bash
 pip install -r requirements.txt
 ```
@@ -93,10 +100,10 @@ pip install -r requirements.txt
 6. Download the generated client secrets JSON file, rename it to exactly `credentials.json`, and place it in the project root.
 
 ### Step 5: Start the App
-Launch the Streamlit interface:
+Launch the Flask interface:
 ```bash
-streamlit run app.py
+python app.py
 ```
 
 ### Step 6: Access the Application
-Open your web browser and navigate to the URL printed in the terminal (typically **`http://localhost:8501`**). Connect your Google Account or explore the dashboard with the localized mock profiles.
+Open your web browser and navigate to the URL printed in the terminal (typically **`http://127.0.0.1:5000`**). Connect your Google Account or explore the dashboard with the localized mock profiles.
