@@ -85,8 +85,8 @@ Follow these steps to run the engine locally on your system.
 ### Step 1: Clone the Repository
 Clone the repository to your local system and navigate to the project directory:
 ```bash
-git clone <repository-url>
-cd "Audit Me"
+git clone https://github.com/tarunthiru06-design/Audit-Me.git
+cd "Audit-Me"
 ```
 
 ### Step 2: Install Python Dependencies
