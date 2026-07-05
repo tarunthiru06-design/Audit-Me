@@ -1,5 +1,4 @@
-# Capstone Project Submission: Audit-Me
-
+## Kaggle Capstone Project Submission: Audit-Me
 ## 1. The Problem We Are Solving
 Modern productivity tracking applications suffer from a critical architectural flaw: they are either visually unengaging logs that fail to drive real behavioral modification, or they introduce massive data liabilities. To provide personalized feedback, traditional tools scrape and store raw, unencrypted user text strings—such as descriptive calendar titles and private email contents. This creates a severe privacy vulnerability, forcing users to choose between workspace optimization and data sovereignty.
 
