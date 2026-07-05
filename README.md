@@ -1,5 +1,4 @@
-# Procrastination Overhaul: Metadata-Driven Analytics & Remediation Engine
-
+# Audit-Me: Metadata-Driven Analytics & Remediation Engine
 ### A Privacy-First Analytical Workspace Balancing Automated Behavioral Critiques with Decoupled Action Blueprints
 
 ---
