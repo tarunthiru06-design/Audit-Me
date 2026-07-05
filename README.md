@@ -32,7 +32,7 @@ The engine is built as a modular workspace structured as follows:
 ## 📊 System Architecture & Data Flow
 
 <div align="center">
-  <img src="Garchitecture.png" alt="System Architecture" width="85%">
+  <img src="architecture.png" alt="System Architecture" width="85%">
 </div>
 
 ### Architectural Mechanics
