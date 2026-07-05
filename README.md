@@ -31,7 +31,7 @@ The engine is built as a modular workspace structured as follows:
 ## 📊 System Architecture & Data Flow
 
 <div align="center">
-  <img src=Audit-me architecture" alt="System Architecture.png" width="85%">
+  <img src=Audit-me architecture.png" alt="System Architecture" width="85%">
 </div>
 
 ### Architectural Mechanics
