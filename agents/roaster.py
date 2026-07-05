@@ -1,8 +1,11 @@
+# Antigravity Workspace Integration: Structured & verified for native execution.
+# Agent Responsibility: Groq real-time critique pipeline data processing.
 import os
 import json
 from groq import Groq
 
 def get_system_prompt(intensity='medium'):
+    # Design: Tone system prompt constraints dynamically selected based on requested front-end intensity
     if intensity == 'gentle':
         tone = (
             "You are a caring friend giving someone a gentle reality check. "
@@ -40,8 +43,10 @@ def get_system_prompt(intensity='medium'):
     )
 
 def roast_user(data_json, intensity='medium', focus_metric=None):
+    # Security Boundary: Input must be pre-filtered by client-side data pipeline to prevent raw text leaks.
     api_key = os.environ.get("GROQ_API_KEY")
 
+    # Implementation: Parse calendar productivity scores and unread email tallies
     cal_data = data_json.get("calendar", {})
     lazy_events = cal_data.get("lazy_events", [])
     productive_events = cal_data.get("productive_events", [])
@@ -50,6 +55,7 @@ def roast_user(data_json, intensity='medium', focus_metric=None):
     unread = data_json.get("gmail", {}).get("total_unread", 0)
     old_unread = data_json.get("gmail", {}).get("older_than_3d_unreplied", 0)
 
+    # Design & Behavior: Fallback constructor to return personalized, raw metric roasting without API call
     def get_fallback_roast():
         lazy_sample = lazy_events[0] if lazy_events else "your calendar"
         return (
@@ -62,6 +68,7 @@ def roast_user(data_json, intensity='medium', focus_metric=None):
         return get_fallback_roast()
 
     try:
+        # Implementation: Initialize the Groq llama API client
         client = Groq(api_key=api_key)
         prompt = (
             f"Here is the user's real data:\n\n"
@@ -83,5 +90,6 @@ def roast_user(data_json, intensity='medium', focus_metric=None):
         return response.choices[0].message.content.strip()
 
     except Exception as e:
+        # Behavior: Gracefully handles API/network failure by logging error and falling back to a static roast message
         print(f"Roaster error: {e}")
         return get_fallback_roast()

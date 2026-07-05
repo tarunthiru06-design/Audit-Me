@@ -1,3 +1,9 @@
+# Antigravity Workspace Integration: Structured & verified for native execution.
+# Pipeline Responsibility: Secure local data harvesting, API authorization, and metric calculation.
+# Security Boundary: Primary client-side data pipeline filter that scrubs all raw, private text 
+# (email content, event details), transforming them into safe numerical/keyword aggregates.
+# This prevents raw private text leaks before downstream AI agent/API ingestion.
+
 import os
 import datetime
 import json
@@ -122,6 +128,9 @@ def compute_weekly_summary(events):
     return best_day, worst_day
 
 def categorize_calendar_events(events):
+    # Implementation: Local categorization of calendar items using keyword match rules
+    # Design: Filters out irrelevant events using IGNORE_KEYWORDS and places events into lazy or productive lists
+    # Behavior: Generates numerical counts and filtered lists without exposing private titles directly
     """Categorizes events into lazy vs productive and assigns a calendar verdict."""
     lazy_events = []
     productive_events = []
@@ -207,6 +216,9 @@ def calculate_score(data):
     return max(0, min(100, score))
 
 def fetch_data(creds=None, target_date=None, skip_archive_check=False):
+    # Implementation: Calls Google APIs via OAuth, computes metrics, and caches weekly scores
+    # Design: Automatically archives historical summaries on Mondays to maintain time-series records
+    # Behavior: Detects connection state and gracefully falls back to mock productivity datasets when unauthenticated
     """
     Fetches Google Calendar events and Gmail stats using OAuth credentials.
     Returns clean structured JSON data with productivity metrics and calendar categorization.

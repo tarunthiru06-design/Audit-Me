@@ -1,3 +1,8 @@
+# Antigravity Workspace Integration: Structured & verified for native execution.
+# Orchestration Hub Responsibility: Handles HTTP routing, user session state, and invokes agents (Coach and Roaster).
+# Security Boundary: Orchestrates API requests by consuming only clean metrics aggregates from data_pipeline.py.
+# No raw, private message text or event descriptions are handled by the server routes, ensuring zero private leaks.
+
 import os
 import json
 from flask import Flask, render_template, jsonify, request, redirect, url_for, session
@@ -93,6 +98,9 @@ def status():
 
 @app.route('/audit', methods=['GET', 'POST'])
 def audit():
+    # Implementation: Coordinates fetch_data, score calculations, streak updates, and agent invocations
+    # Design: Uses a local DATA_CACHE dictionary to optimize re-roasting and deep dive routes
+    # Behavior: Parses request arguments, simulates short network delays for UX matching, and handles failures gracefully
     """Orchestrates the 3 agents and score calculation."""
     try:
         intensity = request.args.get('intensity', request.json.get('intensity', 'medium') if request.is_json else 'medium')

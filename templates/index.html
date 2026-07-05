@@ -1,3 +1,16 @@
+<!--
+================================================================================
+Audit Me - Privacy-First Productivity Critique Engine (Frontend Template)
+--------------------------------------------------------------------------------
+Implementation: Fully client-side rendered dashboard integrating calendar metrics 
+                and email backlog statistics with Flask endpoints (/status, /score,
+                /audit, /again, /deeper).
+Design: Modern dark mode with customized HSL-tailored colors, animated SVG progress
+        gauges, responsive CSS grid, glassmorphic effects, and ambient glow backdrops.
+Behaviors: Dynamic state handling (roast re-rolls, custom roast intensities, share 
+           copy-to-clipboard, sequential fake auditing animation overlays).
+================================================================================
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +24,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
+        /*
+        Design: Theme Core Configuration
+        Specifies color palette, font declarations, and baseline spacing tokens.
+        */
         :root {
             --bg-color: #070709;
             --card-bg: #0f0f13;
@@ -34,14 +51,6 @@
 
         body {
             background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
-                radial-gradient(1.5px 1.5px at 150px 75px, rgba(255,255,255,0.7), rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 300px 180px, rgba(255,255,255,0.5), rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 450px 250px, rgba(255,255,255,0.9), rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 600px 350px, #ffffff, rgba(0,0,0,0)),
-                radial-gradient(1.5px 1.5px at 750px 480px, rgba(255,255,255,0.6), rgba(0,0,0,0));
-            background-size: 800px 800px;
             color: var(--text-primary);
             font-family: var(--font-sans);
             min-height: 100vh;
@@ -66,6 +75,31 @@
             transform: translateX(-50%);
             z-index: -1;
             pointer-events: none;
+        }
+
+        /* 
+        Design: Background Ambient Aesthetics
+        Creates an immersive, deep-space visual styling using dynamic CSS keyframe animations 
+        and overlapping radial-gradients to simulate moving and glowing stars.
+        */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: calc(100% + 800px);
+            height: calc(100% + 800px);
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 150px 75px, rgba(255,255,255,0.7), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 300px 180px, rgba(255,255,255,0.5), rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 450px 250px, rgba(255,255,255,0.9), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 600px 350px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 750px 480px, rgba(255,255,255,0.6), rgba(0,0,0,0));
+            background-size: 800px 800px;
+            z-index: -2;
+            pointer-events: none;
+            animation: starsMoveAndGlow 100s linear infinite;
         }
 
         /* Top Badges */
@@ -418,6 +452,17 @@
             color: #ffffff;
         }
 
+        .btn-deeper-orange {
+            background-color: transparent;
+            border: 1px solid var(--accent-orange);
+            color: var(--accent-orange);
+        }
+        .btn-deeper-orange:hover {
+            background-color: rgba(245, 158, 11, 0.05);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.25);
+        }
+
         .btn-fix-outline {
             background-color: transparent;
             border: 1px solid #ffffff;
@@ -468,17 +513,6 @@
             color: #f3f1f6;
             padding: 0.5rem 0;
             position: relative;
-        }
-
-        .roast-text-container::before {
-            content: '“';
-            position: absolute;
-            top: -20px;
-            left: -10px;
-            font-size: 4.5rem;
-            color: rgba(239, 68, 68, 0.15);
-            font-family: serif;
-            line-height: 1;
         }
 
         /* Fix Me Card & Styling */
@@ -639,6 +673,69 @@
             right: 24px;
         }
 
+        /* Title Area Styling */
+        .title-area {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .pulsing-glow {
+            position: absolute;
+            width: 400px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.22) 0%, rgba(245, 158, 11, 0.08) 50%, transparent 80%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            filter: blur(30px);
+            z-index: 1;
+            pointer-events: none;
+            animation: breathe 5s ease-in-out infinite;
+            border-radius: 50%;
+        }
+
+        .main-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 5.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ef4444 0%, #f97316 50%, #f59e0b 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 6s linear infinite;
+            position: relative;
+            z-index: 2;
+            text-transform: uppercase;
+            line-height: 1.1;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .subtitle {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.45em;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-top: 0.75rem;
+            opacity: 0;
+            animation: fadeInSubtitle 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.4s;
+            z-index: 2;
+            position: relative;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            margin-left: 0.45em; /* Offset for letter-spacing of last character */
+        }
+
         /* Animations */
         @keyframes spinCircle {
             100% { transform: rotate(360deg); }
@@ -648,9 +745,120 @@
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        @keyframes starsMoveAndGlow {
+            0% {
+                transform: translate(0, 0);
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translate(-800px, -800px);
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes breathe {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(0.85);
+                opacity: 0.4;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.15);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeInSubtitle {
+            0% {
+                opacity: 0;
+                transform: translateY(8px);
+                filter: blur(4px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .main-title {
+                font-size: 3.5rem;
+            }
+            .subtitle {
+                font-size: 0.7rem;
+                letter-spacing: 0.3em;
+                margin-left: 0.3em;
+            }
+            .pulsing-glow {
+                width: 240px;
+                height: 100px;
+            }
+        }
+
+        .roast-actions-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            justify-content: flex-end;
+        }
+
+        .roast-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--tile-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            padding: 0.6rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .roast-action-btn:hover {
+            background-color: #1e1e26;
+            border-color: rgba(255, 255, 255, 0.18);
+            transform: translateY(-1px);
+        }
+
+        .roast-action-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-share-roast {
+            border-color: rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+        }
+
+        .btn-share-roast:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.15);
+        }
     </style>
 </head>
 <body>
+
+    <!-- Header Title Area -->
+    <header class="title-area">
+        <div class="pulsing-glow"></div>
+        <h1 class="main-title">AUDIT ME</h1>
+        <p class="subtitle">YOUR DIGITAL LIFE. EXPOSED.</p>
+    </header>
 
     <!-- Top Connection Badges -->
     <div class="top-badges-row">
@@ -666,6 +874,11 @@
     <!-- Main Grid Layout -->
     <div class="main-dashboard-grid">
         <!-- Score Card (Left) -->
+        <!-- 
+        Implementation & Design: Circular SVG Gauge
+        Renders a radial score meter. Uses SVG stroke-dasharray and stroke-dashoffset 
+        manipulated via JavaScript to visually fill the progress bar dynamically.
+        -->
         <div class="dashboard-card score-card">
             <div class="score-gauge-wrapper">
                 <svg class="score-gauge" viewBox="0 0 160 160">
@@ -740,7 +953,7 @@
 
     <!-- Intensity Selector -->
     <div class="intensity-pills-selector">
-        <button class="intensity-selector-btn" onclick="updateIntensity('gentle')">Gentle 😋</button>
+        <button class="intensity-selector-btn" onclick="updateIntensity('gentle')">Gentle 😊</button>
         <button class="intensity-selector-btn" onclick="updateIntensity('medium')">Medium 🔥</button>
         <button class="intensity-selector-btn active" onclick="updateIntensity('savage')">Savage 💀</button>
     </div>
@@ -756,7 +969,10 @@
         <button class="action-control-btn btn-again-outline" onclick="triggerRoastAgain()">
             <span>🔄</span> Roast Me Again
         </button>
-        <button class="action-control-btn btn-fix-outline" onclick="toggleFixesPanel()">
+        <button class="action-control-btn btn-deeper-orange" onclick="triggerDeeperRoast()">
+            <span>🔍</span> Go Deeper
+        </button>
+        <button id="fix-me-btn" class="action-control-btn btn-fix-outline" onclick="toggleFixesPanel()">
             <span>✓</span> Fix Me
         </button>
     </div>
@@ -764,11 +980,16 @@
     <!-- Dynamic Section: AI Roast Card -->
     <div id="roast-display-card" class="dashboard-card dynamic-view-panel">
         <div class="roast-card-header">
-            <span class="roast-card-title">🌶️ AI Roast Critique</span>
+            <span class="roast-card-title">🤖 AI Roast Critique</span>
             <div id="worst-metric-badge-el" class="worst-metric-badge" style="display: none;"></div>
         </div>
         <div id="roast-text-el" class="roast-text-container">
             Loading critiques...
+        </div>
+        <div class="roast-actions-row">
+            <button class="roast-action-btn btn-share-roast" onclick="shareRoast()">
+                <span class="share-icon">📋</span> <span class="share-btn-text">Share Roast</span>
+            </button>
         </div>
     </div>
 
@@ -814,10 +1035,17 @@
 
     <!-- Scripting and Data Bindings -->
     <script>
+        /*
+        Behavior: Client-side State Management
+        - currentIntensityState: Tracks desired tone level for AI roast responses.
+        - fixesHTMLCached: Stores the HTML block of recommendations to prevent redundant HTTP requests.
+        - isRoastGenerated: Tracks whether an active roast exists to allow immediate re-rolling when changing intensity.
+        */
         let currentIntensityState = 'savage';
         let fixesHTMLCached = '';
         let isRoastGenerated = false;
 
+        // Behavior: Application Lifecycles
         window.onload = function() {
             initApp();
         };
@@ -901,6 +1129,11 @@
             }
         }
 
+        /*
+        Behavior & Design: Sequential Pipeline Overlay
+        Displays an immersive full-screen backdrop with a spinner and step-by-step progress status texts
+        (e.g., calendar architecture evaluation -> inbox backlog analysis) to simulate real-time agent activity.
+        */
         function triggerPipelineOverlay(callback) {
             const overlay = document.getElementById('loading-overlay-el');
             const text = document.getElementById('loading-message-el');
@@ -1026,9 +1259,15 @@
 
         function toggleFixesPanel() {
             const fixesCard = document.getElementById('fixes-display-card');
+            const roastCard = document.getElementById('roast-display-card');
+            
+            // Toggle fixes card view
             if (fixesCard.style.display === 'block') {
                 fixesCard.style.display = 'none';
             } else {
+                // Hide roast card and show fixes card
+                roastCard.style.display = 'none';
+                
                 if (!fixesHTMLCached) {
                     // Fetch audit to load fixes
                     fetch(`/audit?intensity=${currentIntensityState}`)
@@ -1046,6 +1285,104 @@
                     fixesCard.scrollIntoView({ behavior: 'smooth' });
                 }
             }
+        }
+
+        function triggerDeeperRoast() {
+            triggerPipelineOverlay(() => {
+                fetch('/deeper', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('loading-overlay-el').style.display = 'none';
+                    if (data.success) {
+                        const roastText = document.getElementById('roast-text-el');
+                        roastText.textContent = data.roast;
+                        
+                        const badge = document.getElementById('worst-metric-badge-el');
+                        badge.textContent = `Worst Metric: ${data.worst_metric}`;
+                        badge.style.display = 'inline-block';
+                        
+                        document.getElementById('roast-display-card').style.display = 'block';
+                        isRoastGenerated = true;
+                        
+                        // Scroll to card
+                        document.getElementById('roast-display-card').scrollIntoView({ behavior: 'smooth' });
+                        showNotification("Hyper-focused critique generated.");
+                    } else {
+                        showNotification("Failed to dive deeper.");
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('loading-overlay-el').style.display = 'none';
+                    showNotification("Network error.");
+                    console.error(err);
+                });
+            });
+        }
+
+        /*
+        Behavior: Roast Sharing Mechanism
+        Allows user to copy generated AI roasts to their clipboard. Tries utilizing modern 
+        navigator.clipboard API first, fallback to document.execCommand when unsupported.
+        */
+        function shareRoast() {
+            const roastText = document.getElementById('roast-text-el').textContent.trim();
+            if (!roastText || roastText === "Loading critiques...") {
+                showNotification("No roast to share yet!");
+                return;
+            }
+
+            // Copy to clipboard
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(roastText)
+                    .then(() => showShareSuccess())
+                    .catch(err => fallbackCopyText(roastText));
+            } else {
+                fallbackCopyText(roastText);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            try {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                if (successful) {
+                    showShareSuccess();
+                } else {
+                    showNotification("Unable to copy to clipboard.");
+                }
+            } catch (err) {
+                showNotification("Copy failed.");
+                console.error(err);
+            }
+        }
+
+        function showShareSuccess() {
+            const btnText = document.querySelector('.share-btn-text');
+            const btnIcon = document.querySelector('.share-icon');
+            
+            if (btnText && btnIcon) {
+                const originalText = btnText.textContent;
+                const originalIcon = btnIcon.textContent;
+                
+                btnText.textContent = "Copied!";
+                btnIcon.textContent = "✓";
+                
+                setTimeout(() => {
+                    btnText.textContent = originalText;
+                    btnIcon.textContent = originalIcon;
+                }, 2000);
+            }
+            
+            showNotification("Roast copied to clipboard!");
         }
     </script>
 </body>
